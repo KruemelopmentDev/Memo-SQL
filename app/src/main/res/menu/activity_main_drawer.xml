@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single" android:id="@+id/all">
+        <item
+            android:id="@+id/newmemo"
+            android:checkable="true"
+            android:icon="@drawable/note_plus_outline"
+            android:title="@string/newmemo" />
+        <item
+            android:id="@+id/allmemo"
+            android:checkable="true"
+            android:checked="true"
+            android:icon="@drawable/note_outline"
+            android:title="@string/allmemos"/>
+        <item
+            android:checkable="true"
+            android:id="@+id/papierkorbanz"
+            android:icon="@drawable/delete_variant"
+            android:title="@string/papierkorb" />
+
+    </group>
+    <group android:checkableBehavior="single" android:id="@+id/all2">
+            <item
+                android:id="@+id/settings"
+                android:checkable="true"
+                android:icon="@drawable/settings_outline"
+                android:title="@string/settings" />
+    </group>
+    <group android:title="@string/about" android:checkableBehavior="single" android:id="@+id/all3">
+            <item
+                android:id="@+id/feed"
+                android:checkable="false"
+                android:icon="@drawable/at"
+                android:title="@string/contact" />
+            <item
+                android:id="@+id/nutz"
+                android:checkable="false"
+                android:icon="@drawable/open_in_new"
+                android:title="@string/nutzungsbed" />
+            <item
+                android:id="@+id/daten"
+                android:checkable="false"
+                android:icon="@drawable/open_in_new"
+                android:title="@string/datenschutze" />
+            <item android:title="@string/libraries" android:id="@+id/sources" android:checkable="true"
+                android:icon="@drawable/card_text_outline"/>
+    </group>
+
+</menu>

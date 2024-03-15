@@ -1,0 +1,16 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="nonname"
+        android:enabled="true"
+        android:icon="@drawable/logorund"
+        android:shortcutShortLabel="@string/s1"
+        android:shortcutLongLabel="@string/l1"
+        android:shortcutDisabledMessage="@string/d">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="de.kruemelopment.org.memo_sql"
+            android:targetClass="de.kruemelopment.org.memo_sql.Shortcut_newmemo" />
+
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

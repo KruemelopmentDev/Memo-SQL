@@ -1,0 +1,140 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="PrivateResource">Memo</string>
+    <string name="navigation_drawer_open">Menü öffnen</string>
+    <string name="navigation_drawer_close">Menü schließen</string>
+    <string name="s1">Neues Memo</string>
+    <string name="l1">Neues Memo erstellen</string>
+    <string name="d">Deakiviert</string>
+    <string name="memoliste">Memo-Liste</string>
+    <string name="singlememo">Einzelnes Memo</string>
+    <string name="config">Konfiguration</string>
+    <string name="nomemossafed">Du hast noch keine Memos gespeichert</string>
+    <string name="nocategorie">(keine Kategorie)</string>
+    <string name="notitle">(kein Titel)</string>
+    <string name="nocontent">(kein Inhalt)</string>
+    <string name="safed_succesful">Memo erfolgreich gespeichert</string>
+    <string name="safed_couldnt">Memo konnte nicht gespeichert werden</string>
+    <string name="confirmdeletion">Löschen bestätigen</string>
+    <string name="suredeletmemo">Bist du dir sicher, dass du alle Memos löschen willst (Du findest sie noch im Papierkorb)?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="smtwentwrong">Da lief etwas schief</string>
+    <string name="sorterror">Fehler bei der Sortierung</string>
+    <string name="nomemochars">Kein Memo behinhaltet diese Zeichen</string>
+    <string name="nomemo">Keine Memos</string>
+    <string name="wrongpassword">Das Passwort ist falsch</string>
+    <string name="copyclipboard">Inhalt in die Zwischenablage kopiert</string>
+    <string name="firstunlock">Bitte entsperre dieses Memo erst!</string>
+    <string name="changed_succesful">Memo erfolgreich geändert</string>
+    <string name="deletethismemo">Bist du dir sicher, dass du dieses Memo löschen möchtest? (Du findest es noch im Papierkorb)</string>
+    <string name="delete_succesful">Löschen erfolgreich</string>
+    <string name="change_couldnt">Memo konnte nicht geändert werden</string>
+    <string name="agreement"><![CDATA[Mit der Nutzung dieser App aktzeptiere ich die <a href=\"https://www.kruemelopment-dev.de/datenschutzerklaerung\">Datenschutzerklärung</a> und die <a href=\"https://www.kruemelopment-dev.de/nutzungsbedingungen\">Nutzungsbedingungen</a> von Krümelopment Dev]]></string>
+    <string name="newmemo">Neues Memo</string>
+    <string name="memos">Memos</string>
+    <string name="papierkorb">Papierkorb</string>
+    <string name="settings">Einstellungen</string>
+    <string name="nutzungsbedingungen">https://www.kruemelopment-dev.de/nutzungsbedingungen</string>
+    <string name="datens">https://www.kruemelopment-dev.de/datenschutzerklaerung</string>
+    <string name="libraries">Open-Source-Bibliotheken</string>
+    <string name="safe_failed">Speichern fehlgeschlagen</string>
+    <string name="restored_sucessful">Memos erfolgreich wiederhergestellt</string>
+    <string name="restored_partially_sucessful">Nicht alle Memos wurden erfolgreich wiederhergestellt</string>
+    <string name="restored_failed">Wiederherstellung fehlgeschlagen</string>
+    <string name="noaskpermission">Du hast uns dauerhaft das Recht entzogen nach der Speicherberechtigung zu fragen, ohne Speicherberechtigung können wir keine Memos oder Backups speichern!</string>
+    <string name="safe_sucessful">Erfolgreich gespeichert</string>
+    <string name="nodeletedmemos">Du hast noch keine Memos gelöscht</string>
+    <string name="emptytrash">Bist du dir sicher, dass du den Papierkorb leeren möchtest?</string>
+    <string name="share">Teilen</string>
+    <string name="share_how">Wie möchtest du dein Memo teilen?</string>
+    <string name="asfile">Als Datei</string>
+    <string name="sharevia">Memo teilen über…</string>
+    <string name="astext">Als Text</string>
+    <string name="categorie">Kategorie</string>
+    <string name="error">Fehler</string>
+    <string name="authentification_failed">Authentifizierung fehlgeschlagen</string>
+    <string name="nofiles">Keine Dateien vorhanden</string>
+    <string name="deletedmemo">(Gelöschtes Memo)</string>
+    <string name="nomemoselected">Kein Memo ausgewählt</string>
+    <string name="deleteforever">Bist du dir sicher, dass du dieses Memo für immer löschen möchtest?</string>
+    <string name="deleteall">Bist du dir sicher, dass du ALLES löschen willst? Alle Memos sind dann für immer weg…</string>
+    <string name="nomemoscreated">Du hast noch keine Memos erstellt</string>
+    <string name="allsafedsucessful">Alle Memos erfolgreich gespeichert</string>
+    <string name="fingerpringppermanent">Du hast der App dauerhaft das Recht entzogen nach der Berechtigung den Fingerabdruckscanner benutzen zu dürfen zu fragen, ohne diese kann die App diese Aktion nicht durchführen!</string>
+    <string name="fingerprintponetime">Die App kann diese Aktion ohne die Berechtigung den Fingerabdruckscanner benutzen zu dürfen nicht durchführen!</string>
+    <string name="storageppermanent">Du hast der App dauerhaft das Recht entzogen nach der Speicherberechtigung zu fragen, ohne Speicherberechtigung kann die App diese Aktion nicht durchführen!</string>
+    <string name="storageponetime">Die App kann diese Aktion ohne Speicherberechtigung nicht durchführen!</string>
+    <string name="search">Suchen</string>
+    <string name="filter">Filtern</string>
+    <string name="delete">Löschen</string>
+    <string name="nutzungsbed">Nutzungsbedingungen</string>
+    <string name="datenschutze">Datenschutzerklärung</string>
+    <string name="contact">Kontakt</string>
+    <string name="about">Über</string>
+    <string name="allmemos">Alle Memos</string>
+    <string name="selectwhatshown">Bitte wähle aus, was angezeigt werden soll!</string>
+    <string name="select">Auswählen</string>
+    <string name="chosefolder2">Wähle einen Ordner aus!</string>
+    <string name="insertpassword">Passwort eingeben</string>
+    <string name="memosended">Jemand hat dir ein Memo geschickt. Willst du es behalten oder löschen?</string>
+    <string name="content">Inhalt</string>
+    <string name="title">Titel</string>
+    <string name="password">Passwort</string>
+    <string name="agree">Zustimmen</string>
+    <string name="reject">Ablehnen</string>
+    <string name="memotapactivated">Für Memo tippen aktiviert</string>
+    <string name="open">Öffnen</string>
+    <string name="stop">Stoppen</string>
+    <string name="date">Datum</string>
+    <string name="addmemo">Memo hinzufügen</string>
+    <string name="selectmemo">Memo auswählen</string>
+    <string name="sorting">Sortierung</string>
+    <string name="sorting_des">Stelle die Sortierung ein, die angewandt wird, wenn die App gestartet wird.</string>
+    <string name="widgetsorting">Widget-Sortierung</string>
+    <string name="widgetsorting_des">Stelle die Sortierung der Memos in den Memolisten ein.</string>
+    <string name="popup">Pop-Up</string>
+    <string name="popup_des">Ein Pop-Up welches erscheint, wenn du Text kopierst um ihn schneller in ein Memo zu verwandeln.</string>
+    <string name="newmemooverlay">Neues-Memo-Schaltfläche</string>
+    <string name="newmemooverlay_des">Eine Schaltfläche am unteren Bildschirmrand um neue Memos schneller anzulegen.</string>
+    <string name="createbackup">Backup erstellen</string>
+    <string name="loadbackup">Backup laden</string>
+    <string name="createbackup_des">Erstellt ein Backup aller Memos.</string>
+    <string name="loadbackup_des">Lade Memos aus einer Backup-Datei.</string>
+    <string name="deleteallforever">Alle Daten löschen</string>
+    <string name="deleteallforever_des">Löscht alle deine Memos unwiderruflich.</string>
+    <string name="safety">Sicherheit</string>
+    <string name="fingerprint">Biometrie</string>
+    <string name="fingerprint_des">Entsperre Memos mit deinen biometrischen Daten.</string>
+    <string name="allunlock">Alle enstperren</string>
+    <string name="allunlock_des">Entsperre alle Memos, indem deine biometrischen Daten nur einmal erkannt werden.</string>
+    <string name="unlockmemo">Memos sperren</string>
+    <string name="unlockmemo_des">Alle Memos werden gesperrt, wenn das Gerät gesperrt wird oder die App in den Hintergrund geschickt wird.</string>
+    <string name="off">Aus</string>
+    <string name="on">An</string>
+    <string-array name="listentries">
+        <item>Neuste zuerst</item>
+        <item>Älteste zuerst</item>
+        <item>Längste zuerst</item>
+        <item>Kürzeste zuerst</item>
+        <item>Alphabetisch (A-Z)</item>
+        <item>Alphabetisch (Z-A)</item>
+    </string-array>
+    <string-array name="listvalues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    <string name="pnight">Nachtmodus</string>
+    <string name="bnight">Der Nachtmodus ist aktiviert.</string>
+    <string name="bnight2">Der Nachtmodus ist deaktiviert.</string>
+    <string name="notloaded">Memo konnte nicht geladen werden.</string>
+    <string name="nobackup">Das ist keine Memo-Backup Datei.</string>
+    <string name="nofile">Das ist keine Memo Datei.</string>
+    <string name="keine_kategorie">(keine Kategorie)</string>
+    <string name="kein_titel">(kein Titel)</string>
+    <string name="kein_inhalt">(kein Inhalt)</string>
+    <string name="no_memos">Keine Memos</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="de.kruemelopment.org.memo_sql.WidgetListConfigure"
+    android:initialKeyguardLayout="@layout/widgetview"
+    android:initialLayout="@layout/widgetview"
+    android:minHeight="60dp"
+    android:minWidth="250dp"
+    android:previewImage="@drawable/memologo"
+    android:resizeMode="vertical|horizontal"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen|keyguard">
+
+</appwidget-provider>

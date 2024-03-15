@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:title="App" app:iconSpaceReserved="false" app:key="appsettings">
+        <ListPreference
+            app:key="order"
+            app:title="@string/sorting"
+            app:summary="@string/sorting_des"
+            app:entries="@array/listentries"
+            app:defaultValue="1"
+            app:iconSpaceReserved="false"
+            app:entryValues="@array/listvalues" />
+        <ListPreference
+            app:key="orderwidget"
+            app:title="@string/widgetsorting"
+            app:summary="@string/widgetsorting_des"
+            app:entries="@array/listentries"
+            app:defaultValue="1"
+            app:iconSpaceReserved="false"
+            app:entryValues="@array/listvalues" />
+        <SwitchPreference
+            app:key="fabshow"
+            app:title="@string/newmemooverlay"
+            app:summary="@string/newmemooverlay_des"
+            app:iconSpaceReserved="false"
+            app:defaultValue="true" />
+        <SwitchPreference
+            app:key="nightmode"
+            app:title="@string/pnight"
+            app:summaryOn="@string/bnight"
+            app:summaryOff="@string/bnight2"
+            app:iconSpaceReserved="false"
+            app:defaultValue="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:title="Daten" app:iconSpaceReserved="false">
+        <Preference
+            app:key="makebackup"
+            app:title="@string/createbackup"
+            app:iconSpaceReserved="false"
+            app:summary="@string/createbackup_des"
+            />
+        <Preference
+            app:key="openbackup"
+            app:title="@string/loadbackup"
+            app:iconSpaceReserved="false"
+            app:summary="@string/loadbackup_des"
+            />
+        <Preference
+            app:key="deleteforeverall"
+            app:title="@string/deleteallforever"
+            app:iconSpaceReserved="false"
+            app:summary="@string/deleteallforever_des"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:key="safety"
+        app:title="@string/safety"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            app:key="fingerprint"
+            app:title="@string/fingerprint"
+            app:iconSpaceReserved="false"
+            app:summary="@string/fingerprint_des"
+            app:defaultValue="false" />
+        <SwitchPreference
+            app:key="allwithfinger"
+            app:iconSpaceReserved="false"
+            app:title="@string/allunlock"
+            app:summary="@string/allunlock_des"
+            app:defaultValue="false"
+            app:dependency="fingerprint"/>
+        <SwitchPreference
+            app:key="devicelock"
+            app:iconSpaceReserved="false"
+            app:title="@string/unlockmemo"
+            app:summary="@string/unlockmemo_des"
+            app:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

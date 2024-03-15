@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#007b17</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#007B17</color>
+    <color name="hggrau">#9ce4e4e4</color>
+    <color name="textgrau">#878787</color>
+    <color name="blacktras">#e5000000</color>
+    <color name="passwort">#e6ffffff</color>
+    <color name="textColorReference">?android:attr/textColorPrimary</color>
+    <color name="textColorReferenceinv">?android:attr/textColorPrimaryInverse</color>
+    <color name="wbackground">?attr/colorBackgroundFloating</color>
+
+</resources>

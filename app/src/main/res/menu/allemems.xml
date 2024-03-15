@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="@string/search"
+        android:id="@+id/suchleiste"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@drawable/magnify"/>
+    <item android:title="@string/filter"
+        android:id="@+id/filtern"
+        app:showAsAction="always"
+        android:icon="@drawable/filter_variant"/>
+    <item android:title="@string/delete"
+        android:id="@+id/losen"
+        app:showAsAction="always"
+        android:icon="@drawable/delete_forever_outline"/>
+</menu>
