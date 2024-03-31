@@ -31,6 +31,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.RecyclerView
 import es.dmoral.toasty.Toasty
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -38,7 +39,7 @@ import java.util.concurrent.Executors
 class Papierkorbadapter internal constructor(
     var context: Context?,
     var rowItems: MutableList<Liste>
-) : BaseAdapter() {
+) : RecyclerView.Adapter<Papierkorbadapter.MyViewHolder>() {
     private var klappen = true
     var alleitems = ArrayList<Liste>()
     var a: Boolean
@@ -58,8 +59,7 @@ class Papierkorbadapter internal constructor(
         if (a) fingerprintinit()
     }
 
-    /*private view holder class*/
-    private class ViewHolder {
+    class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var textView: TextView? = null
         var textView1: TextView? = null
         var textView2: TextView? = null
@@ -72,27 +72,29 @@ class Papierkorbadapter internal constructor(
         var imageView5: ImageView? = null
         var relativeLayout: RelativeLayout? = null
         var schloss: ImageView? = null
+
+        init {
+            textView = v.findViewById(R.id.textView2)
+            textView1 = v.findViewById(R.id.textView3)
+            textView2 = v.findViewById(R.id.textView4)
+            textView3 = v.findViewById(R.id.textView5)
+            imageView = v.findViewById(R.id.imageView2)
+            imageView2 = v.findViewById(R.id.imageView3)
+            imageView3 = v.findViewById(R.id.imageView5)
+            imageView4 = v.findViewById(R.id.imageView7)
+            imageView5 = v.findViewById(R.id.imageView10)
+            relativeLayout = v.findViewById(R.id.tallayout)
+            schloss = v.findViewById(R.id.imageView11)
+        }
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var v = convertView
-        val holder = ViewHolder()
-        if (v == null) {
-            val vi = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = vi.inflate(R.layout.allememoscard, parent, false)
-            holder.textView = v.findViewById(R.id.textView2)
-            holder.textView1 = v.findViewById(R.id.textView3)
-            holder.textView2 = v.findViewById(R.id.textView4)
-            holder.textView3 = v.findViewById(R.id.textView5)
-            holder.imageView = v.findViewById(R.id.imageView2)
-            holder.imageView2 = v.findViewById(R.id.imageView3)
-            holder.imageView3 = v.findViewById(R.id.imageView5)
-            holder.imageView4 = v.findViewById(R.id.imageView7)
-            holder.imageView5 = v.findViewById(R.id.imageView10)
-            holder.relativeLayout = v.findViewById(R.id.tallayout)
-            holder.schloss = v.findViewById(R.id.imageView11)
-        }
-        val rowItem = getItem(position) as Liste
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.allememoscard, parent, false)
+        return MyViewHolder(v)
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val rowItem = rowItems[position]
         if (rowItem.title == context!!.getString(R.string.nodeletedmemos) || rowItem.title == context!!.getString(
                 R.string.nomemoselected
             ) || rowItem.title == context!!.getString(R.string.nomemochars)
@@ -215,7 +217,7 @@ class Papierkorbadapter internal constructor(
                     holder.textView1!!.text = resultnew.toString()
                     holder.imageView5!!.rotation = 0f
                     rowItem.isLocked = true
-                    notifyDataSetChanged()
+                    notifyItemChanged(holder.adapterPosition)
                 }
             }
             holder.textView1!!.setOnLongClickListener {
@@ -276,7 +278,6 @@ class Papierkorbadapter internal constructor(
             holder.imageView!!.setOnClickListener {
                 val myDb = PapierkorbHelper(context)
                 val res = myDb.allData
-                myDb.close()
                 var titel: String? = ""
                 var thema: String? = ""
                 var datum: String? = ""
@@ -315,8 +316,8 @@ class Papierkorbadapter internal constructor(
                     outtoRight.setAnimationListener(object : Animation.AnimationListener {
                         override fun onAnimationStart(animation: Animation) {}
                         override fun onAnimationEnd(animation: Animation) {
-                            rowItems.removeAt(position)
-                            alleitems.removeAt(position)
+                            rowItems.removeAt(holder.adapterPosition)
+                            alleitems.removeAt(holder.adapterPosition)
                             if (rowItems.isEmpty()) {
                                 rowItems.add(
                                     0,
@@ -332,7 +333,7 @@ class Papierkorbadapter internal constructor(
                                     )
                                 )
                                 if (adaptertoFragment != null) adaptertoFragment!!.hidemenuitems()
-                                notifyDataSetChanged()
+                                notifyItemChanged(0)
                                 val infromRight: Animation = TranslateAnimation(
                                     Animation.RELATIVE_TO_PARENT, 1.0f,
                                     Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -342,7 +343,7 @@ class Papierkorbadapter internal constructor(
                                 infromRight.duration = 300
                                 infromRight.interpolator = AccelerateInterpolator()
                                 holder.relativeLayout!!.startAnimation(infromRight)
-                            } else notifyDataSetChanged()
+                            } else notifyItemRemoved(holder.adapterPosition)
                             val widgetIDs = AppWidgetManager.getInstance(context).getAppWidgetIds(
                                 ComponentName(
                                     context!!, MemoListe::class.java
@@ -368,69 +369,70 @@ class Papierkorbadapter internal constructor(
                 )
                 builder.setTitle(context!!.getString(R.string.confirmdeletion))
                     .setMessage(context!!.getString(R.string.deleteforever)).setPositiveButton(
-                    context!!.getString(R.string.yes)
-                ) { dialogInterface: DialogInterface, _: Int ->
-                    dialogInterface.dismiss()
-                    val myDb = PapierkorbHelper(context)
-                    myDb.deleteData(holder.id)
-                    myDb.close()
-                    Toasty.success(
-                        context!!,
-                        context!!.getString(R.string.delete_succesful),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val outtoRight: Animation = TranslateAnimation(
-                        Animation.RELATIVE_TO_PARENT, 0.0f,
-                        Animation.RELATIVE_TO_PARENT, 1.0f,
-                        Animation.RELATIVE_TO_PARENT, 0.0f,
-                        Animation.RELATIVE_TO_PARENT, 0.0f
-                    )
-                    outtoRight.duration = 300
-                    outtoRight.interpolator = AccelerateInterpolator()
-                    holder.relativeLayout!!.startAnimation(outtoRight)
-                    outtoRight.setAnimationListener(object : Animation.AnimationListener {
-                        override fun onAnimationStart(animation: Animation) {}
-                        override fun onAnimationEnd(animation: Animation) {
-                            rowItems.removeAt(position)
-                            alleitems.removeAt(position)
-                            if (rowItems.isEmpty()) {
-                                rowItems.add(
-                                    0,
-                                    Liste(
-                                        "",
-                                        context!!.getString(R.string.nodeletedmemos),
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        null,
-                                        false
+                        context!!.getString(R.string.yes)
+                    ) { dialogInterface: DialogInterface, _: Int ->
+                        dialogInterface.dismiss()
+                        val myDb = PapierkorbHelper(context)
+                        myDb.deleteData(holder.id)
+                        myDb.close()
+                        Toasty.success(
+                            context!!,
+                            context!!.getString(R.string.delete_succesful),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val outtoRight: Animation = TranslateAnimation(
+                            Animation.RELATIVE_TO_PARENT, 0.0f,
+                            Animation.RELATIVE_TO_PARENT, 1.0f,
+                            Animation.RELATIVE_TO_PARENT, 0.0f,
+                            Animation.RELATIVE_TO_PARENT, 0.0f
+                        )
+                        outtoRight.duration = 300
+                        outtoRight.interpolator = AccelerateInterpolator()
+                        holder.relativeLayout!!.startAnimation(outtoRight)
+                        outtoRight.setAnimationListener(object : Animation.AnimationListener {
+                            override fun onAnimationStart(animation: Animation) {}
+                            override fun onAnimationEnd(animation: Animation) {
+                                rowItems.removeAt(holder.adapterPosition)
+                                alleitems.removeAt(holder.adapterPosition)
+                                if (rowItems.isEmpty()) {
+                                    rowItems.add(
+                                        0,
+                                        Liste(
+                                            "",
+                                            context!!.getString(R.string.nodeletedmemos),
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            null,
+                                            false
+                                        )
                                     )
-                                )
-                                if (adaptertoFragment != null) adaptertoFragment!!.hidemenuitems()
-                                notifyDataSetChanged()
-                                val infromLeft: Animation = TranslateAnimation(
-                                    Animation.RELATIVE_TO_PARENT, -1.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f
-                                )
-                                infromLeft.duration = 300
-                                infromLeft.interpolator = AccelerateInterpolator()
-                                holder.relativeLayout!!.startAnimation(infromLeft)
-                            } else notifyDataSetChanged()
-                            val widgetIDs = AppWidgetManager.getInstance(context).getAppWidgetIds(
-                                ComponentName(
-                                    context!!, MemoListe::class.java
-                                )
-                            )
-                            for (id in widgetIDs) AppWidgetManager.getInstance(context)
-                                .notifyAppWidgetViewDataChanged(id, R.id.listewidget)
-                        }
+                                    if (adaptertoFragment != null) adaptertoFragment!!.hidemenuitems()
+                                    notifyItemChanged(0)
+                                    val infromLeft: Animation = TranslateAnimation(
+                                        Animation.RELATIVE_TO_PARENT, -1.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f
+                                    )
+                                    infromLeft.duration = 300
+                                    infromLeft.interpolator = AccelerateInterpolator()
+                                    holder.relativeLayout!!.startAnimation(infromLeft)
+                                } else notifyItemChanged(holder.adapterPosition)
+                                val widgetIDs =
+                                    AppWidgetManager.getInstance(context).getAppWidgetIds(
+                                        ComponentName(
+                                            context!!, MemoListe::class.java
+                                        )
+                                    )
+                                for (id in widgetIDs) AppWidgetManager.getInstance(context)
+                                    .notifyAppWidgetViewDataChanged(id, R.id.listewidget)
+                            }
 
-                        override fun onAnimationRepeat(animation: Animation) {}
-                    })
-                }
+                            override fun onAnimationRepeat(animation: Animation) {}
+                        })
+                    }
                     .setNegativeButton(context!!.getString(R.string.no)) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
                     .show()
             }
@@ -456,202 +458,209 @@ class Papierkorbadapter internal constructor(
                 ).show()
             }
         }
-        return v!!
     }
+        override fun getItemId(position: Int): Long {
+            return rowItems[position].id!!.toLong()
+        }
 
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return rowItems.size
     }
 
-    override fun getItem(position: Int): Any {
-        return rowItems[position]
-    }
-
-    override fun getItemId(position: Int): Long {
-        return rowItems[position].id!!.toLong()
-    }
-
     fun reset() {
-        rowItems.clear()
-        rowItems.addAll(alleitems)
-        notifyDataSetChanged()
-    }
-
-    fun search(charText: String) {
-        rowItems.clear()
-        if (charText.isEmpty()) rowItems.addAll(alleitems) else {
-            for (wp in alleitems) {
-                if (wp.title.contains(charText) || wp.inhalt.contains(charText) || wp.thema.contains(
-                        charText
-                    ) || wp.datum.contains(charText)
-                ) {
-                    rowItems.add(wp)
-                } else {
-                    if (wp.title.lowercase(Locale.getDefault())
-                            .contains(charText.lowercase(Locale.getDefault())) || wp.inhalt.lowercase(
-                            Locale.getDefault()
-                        ).contains(charText.lowercase(Locale.getDefault())) || wp.datum.lowercase(
-                            Locale.getDefault()
-                        ).contains(charText.lowercase(Locale.getDefault())) || wp.thema.lowercase(
-                            Locale.getDefault()
-                        ).contains(charText.lowercase(Locale.getDefault()))
-                    ) rowItems.add(wp)
-                }
-            }
-            if (rowItems.isEmpty()) {
-                val item =
-                    Liste("", context!!.getString(R.string.nomemochars), "", "", "", "", "", false)
-                rowItems.add(item)
-            }
+            rowItems.clear()
+            rowItems.addAll(alleitems)
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
-    }
 
-    private fun fingerprintinit() {
-        promptInfo = PromptInfo.Builder()
-            .setTitle("Memo")
-            .setDescription("Nutz' deinen Fingerabdruck um deine Memos entsperren")
-            .setConfirmationRequired(true)
-            .setNegativeButtonText("Passwort verwenden")
-            .build()
-        myBiometricPrompt = BiometricPrompt(
-            (context as FragmentActivity?)!!,
-            Executors.newSingleThreadExecutor(),
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    Handler(Looper.getMainLooper()).post {
-                        val dialog = Dialog(context!!, R.style.AppDialog)
-                        dialog.setContentView(R.layout.insertpasswort)
-                        val rowItem = rowItems[geklicktes]
-                        val falsch = dialog.findViewById<TextView>(R.id.textView12)
-                        falsch.visibility = View.GONE
-                        val pass = dialog.findViewById<EditText>(R.id.editText5)
-                        pass.addTextChangedListener(object : TextWatcher {
-                            override fun beforeTextChanged(
-                                s: CharSequence,
-                                start: Int,
-                                count: Int,
-                                after: Int
-                            ) {
-                            }
-
-                            override fun onTextChanged(
-                                s: CharSequence,
-                                start: Int,
-                                before: Int,
-                                count: Int
-                            ) {
-                                falsch.visibility = View.GONE
-                                if (rowItem.passwort == pass.text.toString()) {
-                                    rowItem.isLocked = false
-                                    notifyDataSetChanged()
-                                    dialog.dismiss()
-                                }
-                            }
-
-                            override fun afterTextChanged(s: Editable) {}
-                        })
-                        pass.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
-                            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                if (rowItem.passwort == pass.text.toString()) {
-                                    rowItem.isLocked = false
-                                    notifyDataSetChanged()
-                                    dialog.dismiss()
-                                } else {
-                                    falsch.visibility = View.VISIBLE
-                                    falsch.text = context!!.getString(R.string.wrongpassword)
-                                }
-                                return@setOnEditorActionListener true
-                            }
-                            false
-                        }
-                        dialog.show()
-                    }
-                }
-
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    if (b) {
-                        Handler(Looper.getMainLooper()).post {
-                            Toasty.success(context!!, "Memos entsperrt", Toast.LENGTH_SHORT).show()
-                            for (i in rowItems.indices) {
-                                rowItems[i].isLocked = false
-                            }
-                            notifyDataSetChanged()
-                        }
+        fun search(charText: String) {
+            rowItems.clear()
+            if (charText.isEmpty()) rowItems.addAll(alleitems) else {
+                for (wp in alleitems) {
+                    if (wp.title.contains(charText) || wp.inhalt.contains(charText) || wp.thema.contains(
+                            charText
+                        ) || wp.datum.contains(charText)
+                    ) {
+                        rowItems.add(wp)
                     } else {
-                        Handler(Looper.getMainLooper()).post {
-                            Toasty.success(context!!, "Memo entsperrt", Toast.LENGTH_SHORT).show()
-                            rowItems[geklicktes].isLocked = false
-                            notifyDataSetChanged()
-                        }
+                        if (wp.title.lowercase(Locale.getDefault())
+                                .contains(charText.lowercase(Locale.getDefault())) || wp.inhalt.lowercase(
+                                Locale.getDefault()
+                            )
+                                .contains(charText.lowercase(Locale.getDefault())) || wp.datum.lowercase(
+                                Locale.getDefault()
+                            )
+                                .contains(charText.lowercase(Locale.getDefault())) || wp.thema.lowercase(
+                                Locale.getDefault()
+                            ).contains(charText.lowercase(Locale.getDefault()))
+                        ) rowItems.add(wp)
                     }
                 }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Handler(Looper.getMainLooper()).post {
-                        val dialog = Dialog(context!!, R.style.AppDialog)
-                        dialog.setContentView(R.layout.insertpasswort)
-                        val rowItem = rowItems[geklicktes]
-                        val falsch = dialog.findViewById<TextView>(R.id.textView12)
-                        falsch.visibility = View.GONE
-                        val pass = dialog.findViewById<EditText>(R.id.editText5)
-                        pass.addTextChangedListener(object : TextWatcher {
-                            override fun beforeTextChanged(
-                                s: CharSequence,
-                                start: Int,
-                                count: Int,
-                                after: Int
-                            ) {
-                            }
-
-                            override fun onTextChanged(
-                                s: CharSequence,
-                                start: Int,
-                                before: Int,
-                                count: Int
-                            ) {
-                                falsch.visibility = View.GONE
-                                if (rowItem.passwort == pass.text.toString()) {
-                                    rowItem.isLocked = false
-                                    notifyDataSetChanged()
-                                    dialog.dismiss()
-                                }
-                            }
-
-                            override fun afterTextChanged(s: Editable) {}
-                        })
-                        pass.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
-                            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                if (rowItem.passwort == pass.text.toString()) {
-                                    rowItem.isLocked = false
-                                    notifyDataSetChanged()
-                                    dialog.dismiss()
-                                } else {
-                                    falsch.visibility = View.VISIBLE
-                                    falsch.text = context!!.getString(R.string.wrongpassword)
-                                }
-                                return@setOnEditorActionListener true
-                            }
+                if (rowItems.isEmpty()) {
+                    val item =
+                        Liste(
+                            "",
+                            context!!.getString(R.string.nomemochars),
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
                             false
-                        }
-                        dialog.show()
-                    }
+                        )
+                    rowItems.add(item)
                 }
-            })
-    }
+            }
+            notifyDataSetChanged()
+        }
 
-    private fun authenticate() {
-        myBiometricPrompt!!.authenticate(promptInfo!!)
-    }
+        private fun fingerprintinit() {
+            promptInfo = PromptInfo.Builder()
+                .setTitle("Memo")
+                .setDescription("Nutz' deinen Fingerabdruck um deine Memos entsperren")
+                .setConfirmationRequired(true)
+                .setNegativeButtonText("Passwort verwenden")
+                .build()
+            myBiometricPrompt = BiometricPrompt(
+                (context as FragmentActivity?)!!,
+                Executors.newSingleThreadExecutor(),
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        super.onAuthenticationError(errorCode, errString)
+                        Handler(Looper.getMainLooper()).post {
+                            val dialog = Dialog(context!!, R.style.AppDialog)
+                            dialog.setContentView(R.layout.insertpasswort)
+                            val rowItem = rowItems[geklicktes]
+                            val falsch = dialog.findViewById<TextView>(R.id.textView12)
+                            falsch.visibility = View.GONE
+                            val pass = dialog.findViewById<EditText>(R.id.editText5)
+                            pass.addTextChangedListener(object : TextWatcher {
+                                override fun beforeTextChanged(
+                                    s: CharSequence,
+                                    start: Int,
+                                    count: Int,
+                                    after: Int
+                                ) {
+                                }
 
-    fun setAdaptertoFragment(adaptertoFragment: AdaptertoFragment?) {
-        this.adaptertoFragment = adaptertoFragment
-    }
+                                override fun onTextChanged(
+                                    s: CharSequence,
+                                    start: Int,
+                                    before: Int,
+                                    count: Int
+                                ) {
+                                    falsch.visibility = View.GONE
+                                    if (rowItem.passwort == pass.text.toString()) {
+                                        rowItem.isLocked = false
+                                        notifyItemChanged(geklicktes)
+                                        dialog.dismiss()
+                                    }
+                                }
 
-    fun unsetAdaptertoFragment() {
-        adaptertoFragment = null
+                                override fun afterTextChanged(s: Editable) {}
+                            })
+                            pass.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
+                                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                    if (rowItem.passwort == pass.text.toString()) {
+                                        rowItem.isLocked = false
+                                        notifyItemChanged(geklicktes)
+                                        dialog.dismiss()
+                                    } else {
+                                        falsch.visibility = View.VISIBLE
+                                        falsch.text = context!!.getString(R.string.wrongpassword)
+                                    }
+                                    return@setOnEditorActionListener true
+                                }
+                                false
+                            }
+                            dialog.show()
+                        }
+                    }
+
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+                        if (b) {
+                            Handler(Looper.getMainLooper()).post {
+                                Toasty.success(context!!, "Memos entsperrt", Toast.LENGTH_SHORT)
+                                    .show()
+                                for (i in rowItems.indices) {
+                                    rowItems[i].isLocked = false
+                                }
+                                notifyItemChanged(geklicktes)
+                            }
+                        } else {
+                            Handler(Looper.getMainLooper()).post {
+                                Toasty.success(context!!, "Memo entsperrt", Toast.LENGTH_SHORT)
+                                    .show()
+                                rowItems[geklicktes].isLocked = false
+                                notifyItemChanged(geklicktes)
+                            }
+                        }
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        super.onAuthenticationFailed()
+                        Handler(Looper.getMainLooper()).post {
+                            val dialog = Dialog(context!!, R.style.AppDialog)
+                            dialog.setContentView(R.layout.insertpasswort)
+                            val rowItem = rowItems[geklicktes]
+                            val falsch = dialog.findViewById<TextView>(R.id.textView12)
+                            falsch.visibility = View.GONE
+                            val pass = dialog.findViewById<EditText>(R.id.editText5)
+                            pass.addTextChangedListener(object : TextWatcher {
+                                override fun beforeTextChanged(
+                                    s: CharSequence,
+                                    start: Int,
+                                    count: Int,
+                                    after: Int
+                                ) {
+                                }
+
+                                override fun onTextChanged(
+                                    s: CharSequence,
+                                    start: Int,
+                                    before: Int,
+                                    count: Int
+                                ) {
+                                    falsch.visibility = View.GONE
+                                    if (rowItem.passwort == pass.text.toString()) {
+                                        rowItem.isLocked = false
+                                        notifyItemChanged(geklicktes)
+                                        dialog.dismiss()
+                                    }
+                                }
+
+                                override fun afterTextChanged(s: Editable) {}
+                            })
+                            pass.setOnEditorActionListener { _: TextView?, actionId: Int, _: KeyEvent? ->
+                                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                    if (rowItem.passwort == pass.text.toString()) {
+                                        rowItem.isLocked = false
+                                        notifyItemChanged(geklicktes)
+                                        dialog.dismiss()
+                                    } else {
+                                        falsch.visibility = View.VISIBLE
+                                        falsch.text = context!!.getString(R.string.wrongpassword)
+                                    }
+                                    return@setOnEditorActionListener true
+                                }
+                                false
+                            }
+                            dialog.show()
+                        }
+                    }
+                })
+        }
+
+        private fun authenticate() {
+            myBiometricPrompt!!.authenticate(promptInfo!!)
+        }
+
+        fun setAdaptertoFragment(adaptertoFragment: AdaptertoFragment?) {
+            this.adaptertoFragment = adaptertoFragment
+        }
+
+        fun unsetAdaptertoFragment() {
+            adaptertoFragment = null
+        }
     }
-}

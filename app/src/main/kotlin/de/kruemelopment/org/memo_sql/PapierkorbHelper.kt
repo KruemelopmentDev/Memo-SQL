@@ -23,7 +23,8 @@ class PapierkorbHelper internal constructor(context: Context?) :
         titel: String?,
         inhalt: String?,
         datum: String?,
-        passwort: String?
+        passwort: String?,
+        favo:String?
     ) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
@@ -32,6 +33,7 @@ class PapierkorbHelper internal constructor(context: Context?) :
         contentValues.put("Inhalt", inhalt)
         contentValues.put("Datum", datum)
         contentValues.put("Passwort", passwort)
+        contentValues.put("Favorit", favo)
         database.insert(Table_Name, null, contentValues)
         database.close()
     }

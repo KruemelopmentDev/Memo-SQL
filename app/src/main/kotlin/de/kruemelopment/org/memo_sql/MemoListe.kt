@@ -40,7 +40,7 @@ class MemoListe : AppWidgetProvider() {
             val clickIntent = Intent(context, MainActivity::class.java)
             val clickPI = PendingIntent.getActivity(
                 context, 0,
-                clickIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                clickIntent, PendingIntent.FLAG_IMMUTABLE
             )
             rv.setOnClickPendingIntent(R.id.textView20, clickPI)
             rv.setOnClickPendingIntent(R.id.textView30, clickPI)

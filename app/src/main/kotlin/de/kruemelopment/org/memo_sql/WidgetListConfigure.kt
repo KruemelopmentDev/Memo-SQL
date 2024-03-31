@@ -1,23 +1,24 @@
 package de.kruemelopment.org.memo_sql
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.ListView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import es.dmoral.toasty.Toasty
 
 /**
  * The configuration screen for the [WidgeteinzelnesMemo][MemoListe] AppWidget.
  */
-class WidgetListConfigure : AppCompatActivity() {
+class WidgetListConfigure : Activity() {
     private var markierte = false
     private var passwortsecured = false
     public override fun onCreate(icicle: Bundle?) {
@@ -45,7 +46,6 @@ class WidgetListConfigure : AppCompatActivity() {
         val filterListes = ArrayList<FilterListe>()
         val myDB = DataBaseHelper(this)
         val rese = myDB.allDatesASC
-        myDB.close()
         if (rese.count > 0) {
             while (rese.moveToNext()) {
                 if (rese.getString(6) != null) passwortsecured = true
@@ -57,8 +57,8 @@ class WidgetListConfigure : AppCompatActivity() {
                 filterListes.add(FilterListe(rese.getString(2), false))
             }
         } else {
-            finish()
             Toasty.info(this, getString(R.string.nomemossafed), Toast.LENGTH_SHORT).show()
+            finish()
         }
         val noRepeat: MutableList<FilterListe> = ArrayList()
         for (event in filterListes) {
@@ -73,9 +73,13 @@ class WidgetListConfigure : AppCompatActivity() {
         }
         if (markierte) noRepeat.add(FilterListe("Markierte", false))
         if (passwortsecured) noRepeat.add(FilterListe("Passwortgeschützte", false))
-        val listViewe = findViewById<ListView>(R.id.dynamic)
+        val listViewe = findViewById<RecyclerView>(R.id.dynamic)
         val btn = findViewById<TextView>(R.id.textView42)
         val adapt = FilterBaseAdapter(this, noRepeat, markierte, passwortsecured)
+        listViewe!!.setHasFixedSize(false)
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.recycleChildrenOnDetach = true
+        listViewe.layoutManager = linearLayoutManager
         listViewe.adapter = adapt
         listViewe.viewTreeObserver.addOnGlobalLayoutListener {
             val frameheight = listViewe.height

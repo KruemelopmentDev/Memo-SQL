@@ -1,5 +1,6 @@
 package de.kruemelopment.org.memo_sql
 
+import android.app.Activity
 import android.app.Dialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
@@ -12,7 +13,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import es.dmoral.toasty.Toasty
 import java.util.concurrent.Executors
 
@@ -57,12 +59,11 @@ class WidgeteinzelnesMemoConfigureActivity : AppCompatActivity() {
         }
         setResult(RESULT_CANCELED)
         setContentView(R.layout.widgeteinzelnes_memo_configure)
-        val listView = findViewById<ListView>(R.id.widgeteinzeln)
+        val listView = findViewById<RecyclerView>(R.id.widgeteinzeln)
         val btn = findViewById<Button>(R.id.add_button)
         val rowItems: MutableList<Liste> = ArrayList()
         val myDB = DataBaseHelper(this)
         val res = myDB.allDatesDESC
-        myDB.close()
         if (res.count > 0) {
             while (res.moveToNext()) {
                 val item = Liste(
@@ -82,6 +83,10 @@ class WidgeteinzelnesMemoConfigureActivity : AppCompatActivity() {
             Toasty.info(this, getString(R.string.nomemossafed), Toast.LENGTH_SHORT).show()
         }
         val adapter = WidgetAdapter(this, rowItems, mAppWidgetId)
+        listView!!.setHasFixedSize(false)
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.recycleChildrenOnDetach = true
+        listView.layoutManager = linearLayoutManager
         listView.adapter = adapter
         btn.setOnClickListener {
             val sp7 = applicationContext.getSharedPreferences("Widget", 0)

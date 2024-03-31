@@ -32,7 +32,7 @@
             android:textColor="@color/colorAccent"
             android:textSize="30sp" />
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/widgeteinzeln"
             android:layout_width="match_parent"
             android:layout_height="500dp"

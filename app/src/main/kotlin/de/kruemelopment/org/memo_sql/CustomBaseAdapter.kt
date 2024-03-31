@@ -24,7 +24,6 @@ import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -36,6 +35,7 @@ import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.RecyclerView
 import es.dmoral.toasty.Toasty
 import java.io.BufferedWriter
 import java.io.File
@@ -51,7 +51,7 @@ class CustomBaseAdapter(
     var context: Context?,
     var rowItems: MutableList<Liste>,
     myDB: DataBaseHelper
-) : BaseAdapter() {
+) : RecyclerView.Adapter<CustomBaseAdapter.MyViewHolder>() {
     private var resul = false
     private var klappen = true
     private var outtoRight: Animation? = null
@@ -77,14 +77,12 @@ class CustomBaseAdapter(
         }
     }
 
-    /*private view holder class*/
-    private class ViewHolder {
+    class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var textView: TextView? = null
         var textView1: TextView? = null
         var textView2: TextView? = null
         var textView3: TextView? = null
         var id: String? = null
-        var favo: String? = null
         var imageView: ImageView? = null
         var imageView2: ImageView? = null
         var imageView3: ImageView? = null
@@ -92,26 +90,27 @@ class CustomBaseAdapter(
         var imageView5: ImageView? = null
         var relativeLayout: RelativeLayout? = null
         var schloss: ImageView? = null
+
+        init {
+            textView = v.findViewById(R.id.textView2)
+            textView1 = v.findViewById(R.id.textView3)
+            textView2 = v.findViewById(R.id.textView4)
+            textView3 = v.findViewById(R.id.textView5)
+            imageView = v.findViewById(R.id.imageView2)
+            imageView2 = v.findViewById(R.id.imageView3)
+            imageView3 = v.findViewById(R.id.imageView5)
+            imageView4 = v.findViewById(R.id.imageView7)
+            imageView5 = v.findViewById(R.id.imageView10)
+            relativeLayout = v.findViewById(R.id.tallayout)
+            schloss = v.findViewById(R.id.imageView11)
+        }
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.allememoscard, parent, false)
+        return MyViewHolder(v)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var v = convertView
-        val holder = ViewHolder()
-        if (v == null) {
-            val vi = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = vi.inflate(R.layout.allememoscard, parent, false)
-            holder.textView = v!!.findViewById(R.id.textView2)
-            holder.textView1 = v.findViewById(R.id.textView3)
-            holder.textView2 = v.findViewById(R.id.textView4)
-            holder.textView3 = v.findViewById(R.id.textView5)
-            holder.imageView = v.findViewById(R.id.imageView2)
-            holder.imageView2 = v.findViewById(R.id.imageView3)
-            holder.imageView3 = v.findViewById(R.id.imageView5)
-            holder.imageView4 = v.findViewById(R.id.imageView7)
-            holder.imageView5 = v.findViewById(R.id.imageView10)
-            holder.relativeLayout = v.findViewById(R.id.tallayout)
-            holder.schloss = v.findViewById(R.id.imageView11)
-        }
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val rowItem = rowItems[position]
         if (rowItem.title == context!!.getString(R.string.nomemossafed) || rowItem.title == context!!.getString(
                 R.string.nomemochars
@@ -231,13 +230,12 @@ class CustomBaseAdapter(
                     holder.textView1!!.text = resultnew.toString()
                     rowItem.isLocked = true
                     holder.imageView5!!.rotation = 0f
-                    notifyDataSetChanged()
+                    notifyItemChanged(holder.adapterPosition)
                 }
             }
             holder.imageView!!.setImageResource(R.drawable.pencil_outline)
             holder.imageView2!!.setImageResource(R.drawable.delete_outline)
             holder.imageView3!!.setImageResource(R.drawable.share_variant)
-            holder.favo = rowItem.favo
             if (rowItem.favo == "true") holder.imageView4!!.setImageResource(R.drawable.staryellow) else holder.imageView4!!.setImageResource(
                 R.drawable.stargrey
             )
@@ -377,7 +375,7 @@ class CustomBaseAdapter(
                         val c = Calendar.getInstance()
                         val df = SimpleDateFormat("dd.MM.yyyy,HH:mm:ss", Locale.GERMAN)
                         val date = df.format(c.time)
-                        val result: Boolean = if (holder.favo == "true") myDB.updateData(
+                        val result: Boolean = if (rowItem.favo == "true") myDB.updateData(
                             holder.id,
                             themaa,
                             titell,
@@ -427,7 +425,7 @@ class CustomBaseAdapter(
                             alleitems.addAll(rowItems)
                             dialog.dismiss()
                             holder.imageView5!!.rotation = 0f
-                            notifyDataSetChanged()
+                            notifyItemChanged(holder.adapterPosition)
                         } else Toasty.error(
                             context!!,
                             context!!.getString(R.string.change_couldnt),
@@ -448,86 +446,87 @@ class CustomBaseAdapter(
                 )
                 builder.setTitle(context!!.getString(R.string.confirmdeletion))
                     .setMessage(context!!.getString(R.string.deletethismemo)).setPositiveButton(
-                    context!!.getString(R.string.yes)
-                ) { dialogInterface: DialogInterface, _: Int ->
-                    dialogInterface.dismiss()
-                    val pb = PapierkorbHelper(context)
-                    pb.insertData(
-                        rowItem.thema,
-                        rowItem.title,
-                        rowItem.inhalt,
-                        rowItem.datum,
-                        rowItem.passwort
-                    )
-                    val myDb = DataBaseHelper(context)
-                    myDb.deleteData(holder.id)
-                    myDb.close()
-                    pb.close()
-                    Toasty.success(
-                        context!!,
-                        context!!.getString(R.string.delete_succesful),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val intent = Intent(context, WidgeteinzelnesMemo::class.java)
-                    intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                    val ids = AppWidgetManager.getInstance(context).getAppWidgetIds(
-                        ComponentName(
-                            context!!, WidgeteinzelnesMemo::class.java
+                        context!!.getString(R.string.yes)
+                    ) { dialogInterface: DialogInterface, _: Int ->
+                        dialogInterface.dismiss()
+                        val pb = PapierkorbHelper(context)
+                        pb.insertData(
+                            rowItem.thema,
+                            rowItem.title,
+                            rowItem.inhalt,
+                            rowItem.datum,
+                            rowItem.passwort,
+                            rowItem.favo
                         )
-                    )
-                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                    context!!.sendBroadcast(intent)
-                    outtoRight = TranslateAnimation(
-                        Animation.RELATIVE_TO_PARENT, 0.0f,
-                        Animation.RELATIVE_TO_PARENT, +1.0f,
-                        Animation.RELATIVE_TO_PARENT, 0.0f,
-                        Animation.RELATIVE_TO_PARENT, 0.0f
-                    )
+                        val myDb = DataBaseHelper(context)
+                        myDb.deleteData(holder.id)
+                        myDb.close()
+                        pb.close()
+                        Toasty.success(
+                            context!!,
+                            context!!.getString(R.string.delete_succesful),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val intent = Intent(context, WidgeteinzelnesMemo::class.java)
+                        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                        val ids = AppWidgetManager.getInstance(context).getAppWidgetIds(
+                            ComponentName(
+                                context!!, WidgeteinzelnesMemo::class.java
+                            )
+                        )
+                        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                        context!!.sendBroadcast(intent)
+                        outtoRight = TranslateAnimation(
+                            Animation.RELATIVE_TO_PARENT, 0.0f,
+                            Animation.RELATIVE_TO_PARENT, +1.0f,
+                            Animation.RELATIVE_TO_PARENT, 0.0f,
+                            Animation.RELATIVE_TO_PARENT, 0.0f
+                        )
                         outtoRight!!.duration = 300
                         outtoRight!!.interpolator = AccelerateInterpolator()
-                    holder.relativeLayout!!.startAnimation(outtoRight)
-                    outtoRight!!.setAnimationListener(object : Animation.AnimationListener {
-                        override fun onAnimationStart(animation: Animation) {}
-                        override fun onAnimationEnd(animation: Animation) {
-                            rowItems.remove(rowItem)
-                            alleitems.remove(rowItem)
-                            if (rowItems.isEmpty()) {
-                                rowItems.add(
-                                    Liste(
-                                        "",
-                                        context!!.getString(R.string.nomemossafed),
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        false
+                        holder.relativeLayout!!.startAnimation(outtoRight)
+                        outtoRight!!.setAnimationListener(object : Animation.AnimationListener {
+                            override fun onAnimationStart(animation: Animation) {}
+                            override fun onAnimationEnd(animation: Animation) {
+                                rowItems.remove(rowItem)
+                                alleitems.remove(rowItem)
+                                if (rowItems.isEmpty()) {
+                                    rowItems.add(
+                                        Liste(
+                                            "",
+                                            context!!.getString(R.string.nomemossafed),
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            false
+                                        )
+                                    )
+                                    if (adapterFragment != null) adapterFragment!!.hidemenuitems()
+                                    notifyItemChanged(holder.adapterPosition)
+                                    val outtoRight2: Animation = TranslateAnimation(
+                                        Animation.RELATIVE_TO_PARENT, -1.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f,
+                                        Animation.RELATIVE_TO_PARENT, 0.0f
+                                    )
+                                    outtoRight2.duration = 300
+                                    outtoRight2.interpolator = AccelerateInterpolator()
+                                    holder.relativeLayout!!.startAnimation(outtoRight2)
+                                } else notifyItemRemoved(holder.adapterPosition)
+                                val widgetIDs = AppWidgetManager.getInstance(context).getAppWidgetIds(
+                                    ComponentName(
+                                        context!!, MemoListe::class.java
                                     )
                                 )
-                                if (adapterFragment != null) adapterFragment!!.hidemenuitems()
-                                notifyDataSetChanged()
-                                val outtoRight2: Animation = TranslateAnimation(
-                                    Animation.RELATIVE_TO_PARENT, -1.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f,
-                                    Animation.RELATIVE_TO_PARENT, 0.0f
-                                )
-                                outtoRight2.duration = 300
-                                outtoRight2.interpolator = AccelerateInterpolator()
-                                holder.relativeLayout!!.startAnimation(outtoRight2)
-                            } else notifyDataSetChanged()
-                            val widgetIDs = AppWidgetManager.getInstance(context).getAppWidgetIds(
-                                ComponentName(
-                                    context!!, MemoListe::class.java
-                                )
-                            )
-                            for (id in widgetIDs) AppWidgetManager.getInstance(context)
-                                .notifyAppWidgetViewDataChanged(id, R.id.listewidget)
-                        }
+                                for (id in widgetIDs) AppWidgetManager.getInstance(context)
+                                    .notifyAppWidgetViewDataChanged(id, R.id.listewidget)
+                            }
 
-                        override fun onAnimationRepeat(animation: Animation) {}
-                    })
-                }
+                            override fun onAnimationRepeat(animation: Animation) {}
+                        })
+                    }
                     .setNegativeButton(context!!.getString(R.string.no)) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
                     .show()
             }
@@ -538,46 +537,46 @@ class CustomBaseAdapter(
                     )
                     builder.setTitle(context!!.getString(R.string.share))
                         .setMessage(context!!.getString(R.string.share_how)).setPositiveButton(
-                        context!!.getString(R.string.asfile)
-                    ) { dialogInterface: DialogInterface, _: Int ->
-                        dialogInterface.dismiss()
-                        val text =
-                            rowItem.thema + "§%21/" + rowItem.title + "§%21/" + rowItem.inhalt.replace(
-                                "\n",
-                                "%20leerzeichen"
-                            ) + "§%21/" + rowItem.datum
-                        val memo = File(
-                            context!!.getExternalFilesDir(null),
-                            rowItem.title.replace(".", "-") + ".mem"
-                        )
-                        if (memo.exists()) memo.delete()
-                        try {
-                            memo.createNewFile()
-                            val writer = BufferedWriter(FileWriter(memo, true /*append*/))
-                            writer.write(text)
-                            writer.close()
-                            val intentShareFile = Intent(Intent.ACTION_SEND)
-                            intentShareFile.setType("application/mem")
-                            val uri = FileProvider.getUriForFile(
-                                context!!,
-                                "de.kruemelopment.org.memo_sql.provider",
-                                memo
+                            context!!.getString(R.string.asfile)
+                        ) { dialogInterface: DialogInterface, _: Int ->
+                            dialogInterface.dismiss()
+                            val text =
+                                rowItem.thema + "§%21/" + rowItem.title + "§%21/" + rowItem.inhalt.replace(
+                                    "\n",
+                                    "%20leerzeichen"
+                                ) + "§%21/" + rowItem.datum
+                            val memo = File(
+                                context!!.getExternalFilesDir(null),
+                                rowItem.title.replace(".", "-") + ".mem"
                             )
-                            intentShareFile.putExtra(Intent.EXTRA_STREAM, uri)
-                            context!!.startActivity(
-                                Intent.createChooser(
-                                    intentShareFile,
-                                    context!!.getString(R.string.sharevia)
+                            if (memo.exists()) memo.delete()
+                            try {
+                                memo.createNewFile()
+                                val writer = BufferedWriter(FileWriter(memo, true /*append*/))
+                                writer.write(text)
+                                writer.close()
+                                val intentShareFile = Intent(Intent.ACTION_SEND)
+                                intentShareFile.setType("application/mem")
+                                val uri = FileProvider.getUriForFile(
+                                    context!!,
+                                    "de.kruemelopment.org.memo_sql.provider",
+                                    memo
                                 )
-                            )
-                        } catch (e: IOException) {
-                            Toasty.error(
-                                context!!,
-                                context!!.getString(R.string.smtwentwrong),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                intentShareFile.putExtra(Intent.EXTRA_STREAM, uri)
+                                context!!.startActivity(
+                                    Intent.createChooser(
+                                        intentShareFile,
+                                        context!!.getString(R.string.sharevia)
+                                    )
+                                )
+                            } catch (e: IOException) {
+                                Toasty.error(
+                                    context!!,
+                                    context!!.getString(R.string.smtwentwrong),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                    }
                         .setNegativeButton(context!!.getString(R.string.astext)) { dialogInterface: DialogInterface, _: Int ->
                             dialogInterface.dismiss()
                             val send = """
@@ -679,16 +678,12 @@ class CustomBaseAdapter(
                 ).show()
             }
         }
-        return v
     }
 
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return rowItems.size
     }
 
-    override fun getItem(position: Int): Any {
-        return rowItems[position]
-    }
 
     override fun getItemId(position: Int): Long {
         return rowItems[position].hashCode().toLong()
@@ -768,7 +763,7 @@ class CustomBaseAdapter(
                                 falsch.visibility = View.GONE
                                 if (rowItem.passwort == pass.text.toString()) {
                                     rowItem.isLocked = false
-                                    notifyDataSetChanged()
+                                    notifyItemChanged(geklicktes)
                                     dialog.dismiss()
                                 }
                             }
@@ -779,7 +774,7 @@ class CustomBaseAdapter(
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
                                 if (rowItem.passwort == pass.text.toString()) {
                                     rowItem.isLocked = false
-                                    notifyDataSetChanged()
+                                    notifyItemChanged(geklicktes)
                                     dialog.dismiss()
                                 } else {
                                     falsch.visibility = View.VISIBLE
@@ -801,13 +796,13 @@ class CustomBaseAdapter(
                             for (i in rowItems.indices) {
                                 rowItems[i].isLocked = false
                             }
-                            notifyDataSetChanged()
+                            notifyItemRangeChanged(0,rowItems.size)
                         }
                     } else {
                         Handler(Looper.getMainLooper()).post {
                             Toasty.success(context!!, "Memo entsperrt", Toast.LENGTH_SHORT).show()
                             rowItems[geklicktes].isLocked = false
-                            notifyDataSetChanged()
+                            notifyItemChanged(geklicktes)
                         }
                     }
                 }
@@ -839,7 +834,7 @@ class CustomBaseAdapter(
                                 falsch.visibility = View.GONE
                                 if (rowItem.passwort == pass.text.toString()) {
                                     rowItem.isLocked = false
-                                    notifyDataSetChanged()
+                                    notifyItemChanged(geklicktes)
                                     dialog.dismiss()
                                 }
                             }
@@ -850,7 +845,7 @@ class CustomBaseAdapter(
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
                                 if (rowItem.passwort == pass.text.toString()) {
                                     rowItem.isLocked = false
-                                    notifyDataSetChanged()
+                                    notifyItemChanged(geklicktes)
                                     dialog.dismiss()
                                 } else {
                                     falsch.visibility = View.VISIBLE

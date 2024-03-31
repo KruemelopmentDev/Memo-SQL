@@ -4,36 +4,50 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 
 class WidgetAdapter(var context: Context, private var rowItems: List<Liste>, private var mAppWidgetId: Int) :
-    BaseAdapter() {
+    RecyclerView.Adapter<WidgetAdapter.MyViewHolder>()  {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var v = convertView
-        if (v == null) {
-            val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = vi.inflate(R.layout.widgeteinzelnes_memo, parent, false)
+
+    class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        var textView: TextView
+        var textView1: TextView
+        var textView2: TextView
+        var textView3: TextView
+        var imageView: ImageView
+        var imageView2: ImageView
+        var relativeLayout: RelativeLayout
+
+        init {
+            textView = v.findViewById(R.id.textView201)
+            textView1 = v.findViewById(R.id.textView301)
+            textView2 = v.findViewById(R.id.textView401)
+            textView3 = v.findViewById(R.id.textView501)
+            imageView = v.findViewById(R.id.imageView9)
+            imageView2 = v.findViewById(R.id.imageView10)
+            relativeLayout = v.findViewById(R.id.widgetlayout)
         }
-        val textView = v!!.findViewById<TextView>(R.id.textView201)
-        val textView1 = v.findViewById<TextView>(R.id.textView301)
-        val textView2 = v.findViewById<TextView>(R.id.textView401)
-        val textView3 = v.findViewById<TextView>(R.id.textView501)
-        val imageView = v.findViewById<ImageView>(R.id.imageView9)
-        val imageView2 = v.findViewById<ImageView>(R.id.imageView10)
-        val relativeLayout = v.findViewById<RelativeLayout>(R.id.widgetlayout)
-        val rowItem = getItem(position) as Liste
-        textView.text = rowItem.title
-        textView2.text = rowItem.thema
-        textView3.text = rowItem.datum
-        imageView2!!.setImageResource(0)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.widgeteinzelnes_memo, parent, false)
+        return MyViewHolder(v)
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val rowItem = rowItems[position]
+        holder.textView.text = rowItem.title
+        holder.textView2.text = rowItem.thema
+        holder.textView3.text = rowItem.datum
+        holder.imageView2.setImageResource(0)
         if (rowItem.favo == "false") {
-            imageView!!.setImageResource(R.drawable.radiobox_blank)
+            holder.imageView.setImageResource(R.drawable.radiobox_blank)
         } else {
-            imageView!!.setImageResource(R.drawable.radiobox_marked)
+            holder.imageView.setImageResource(R.drawable.radiobox_marked)
         }
         if (rowItem.isLocked && rowItem.passwort != null) {
             val load = rowItem.inhalt
@@ -43,11 +57,11 @@ class WidgetAdapter(var context: Context, private var rowItems: List<Liste>, pri
                     if (load.startsWith("\n", i)) resultnew.append("\n") else resultnew.append("*")
                 } else resultnew.append("*")
             }
-            textView1!!.text = resultnew.toString()
+            holder.textView1.text = resultnew.toString()
         } else {
-            textView1!!.text = rowItem.inhalt
+            holder.textView1.text = rowItem.inhalt
         }
-        relativeLayout!!.setOnClickListener {
+        holder.relativeLayout.setOnClickListener {
             if (rowItem.favo == "false") {
                 var i = 0
                 while (rowItems.size > i) {
@@ -66,17 +80,12 @@ class WidgetAdapter(var context: Context, private var rowItems: List<Liste>, pri
                 ede.apply()
                 rowItem.favo = "false"
             }
-            notifyDataSetChanged()
+            notifyItemChanged(holder.adapterPosition)
         }
-        return v
     }
 
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return rowItems.size
-    }
-
-    override fun getItem(position: Int): Any {
-        return rowItems[position]
     }
 
     override fun getItemId(position: Int): Long {

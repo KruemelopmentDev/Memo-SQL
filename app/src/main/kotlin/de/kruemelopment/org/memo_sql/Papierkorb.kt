@@ -17,24 +17,27 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.ListView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import es.dmoral.toasty.Toasty
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 class Papierkorb : Fragment(), AdaptertoFragment {
     var adapter: Papierkorbadapter? = null
     private var backup = ArrayList<Liste>()
     var rowItems = ArrayList<Liste>()
-    var listView: ListView? = null
+    var recyclerView: RecyclerView? = null
     var myDB: PapierkorbHelper? = null
     private var filter = false
     var one: MenuItem? = null
@@ -78,10 +81,15 @@ class Papierkorb : Fragment(), AdaptertoFragment {
         )
         rowItems = sortieren(rowItems)
         setHasOptionsMenu(true)
-        listView = view.findViewById(R.id.listview)
+        recyclerView = view.findViewById(R.id.listview)
         adapter = Papierkorbadapter(context, rowItems)
         adapter!!.setAdaptertoFragment(this)
-        listView!!.adapter = adapter
+        recyclerView!!.setHasFixedSize(false)
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        linearLayoutManager.recycleChildrenOnDetach = true
+        recyclerView!!.layoutManager = linearLayoutManager
+        recyclerView!!.addItemDecoration(VerticalSpaceItemDecoration(20))
+        recyclerView!!.adapter = adapter
         val fab = view.findViewById<FloatingActionButton>(R.id.floating)
         fab.hide()
         return view
@@ -157,7 +165,7 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                         )
                         outtoRight.duration = 200
                         outtoRight.interpolator = AccelerateInterpolator()
-                        listView!!.startAnimation(outtoRight)
+                        recyclerView!!.startAnimation(outtoRight)
                         Toasty.success(
                             requireContext(),
                             getString(R.string.delete_succesful),
@@ -166,7 +174,9 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                         outtoRight.setAnimationListener(object : Animation.AnimationListener {
                             override fun onAnimationStart(animation: Animation) {}
                             override fun onAnimationEnd(animation: Animation) {
+                                val oldsize=rowItems.size
                                 rowItems.clear()
+                                adapter!!.notifyItemRangeRemoved(1,oldsize-1)
                                 val item1 = Liste(
                                     "",
                                     getString(R.string.nodeletedmemos),
@@ -181,7 +191,7 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                                 one!!.setVisible(false)
                                 two!!.setVisible(false)
                                 three!!.setVisible(false)
-                                adapter!!.notifyDataSetChanged()
+                                adapter!!.notifyItemChanged(0)
                                 val outtoLeft: Animation = TranslateAnimation(
                                     Animation.RELATIVE_TO_PARENT, -1.0f,
                                     Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -190,7 +200,7 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                                 )
                                 outtoLeft.duration = 200
                                 outtoLeft.interpolator = AccelerateInterpolator()
-                                listView!!.startAnimation(outtoLeft)
+                                recyclerView!!.startAnimation(outtoLeft)
                                 val widgetIDs = AppWidgetManager.getInstance(context)
                                     .getAppWidgetIds(
                                         ComponentName(
@@ -224,7 +234,7 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                 for (a in rowItems) {
                     a.isLocked = true
                 }
-                adapter!!.notifyDataSetChanged()
+                adapter!!.notifyItemRangeChanged(0,rowItems.size)
             }
         }
         super.onResume()
@@ -340,7 +350,7 @@ class Papierkorb : Fragment(), AdaptertoFragment {
         if (rowItems[0].title != getString(R.string.nodeletedmemos)) {
             val dialog = Dialog(requireContext(), R.style.AppDialog)
             dialog.setContentView(R.layout.filterlist)
-            val listView = dialog.findViewById<ListView>(R.id.dynamic)
+            val listViewe = dialog.findViewById<RecyclerView>(R.id.dynamic)
             val btn = dialog.findViewById<TextView>(R.id.textView42)
             val filterListes = ArrayList<FilterListe>()
             var passwortsecured = false
@@ -419,15 +429,19 @@ class Papierkorb : Fragment(), AdaptertoFragment {
                 adapter!!.notifyDataSetChanged()
             }
             val adapt = FilterBaseAdapter(requireContext(), noRepeat, false, passwortsecured)
-            listView.adapter = adapt
-            listView.viewTreeObserver.addOnGlobalLayoutListener {
-                val frameheight = listView.height
+            listViewe!!.setHasFixedSize(false)
+            val linearLayoutManager = LinearLayoutManager(requireContext())
+            linearLayoutManager.recycleChildrenOnDetach = true
+            listViewe.layoutManager = linearLayoutManager
+            listViewe.adapter = adapt
+            listViewe.viewTreeObserver.addOnGlobalLayoutListener {
+                val frameheight = listViewe.height
                 val dp = frameheight / requireContext().resources.displayMetrics.density
                 val setdp = 400 * requireContext().resources.displayMetrics.density
                 if (dp > 400) {
-                    val params = listView.layoutParams as RelativeLayout.LayoutParams
+                    val params = listViewe.layoutParams as RelativeLayout.LayoutParams
                     params.height = setdp.toInt()
-                    listView.layoutParams = params
+                    listViewe.layoutParams = params
                 }
             }
             dialog.show()

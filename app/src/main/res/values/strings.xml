@@ -38,7 +38,7 @@
     <string name="datens">https://www.kruemelopment-dev.de/datenschutzerklaerung</string>
     <string name="libraries">Open-Source-Bibliotheken</string>
     <string name="safe_failed">Speichern fehlgeschlagen</string>
-    <string name="restored_sucessful">Memos erfolgreich wiederhergestellt</string>
+    <string name="restored_sucessful">Memo erfolgreich wiederhergestellt</string>
     <string name="restored_partially_sucessful">Nicht alle Memos wurden erfolgreich wiederhergestellt</string>
     <string name="restored_failed">Wiederherstellung fehlgeschlagen</string>
     <string name="noaskpermission">Du hast uns dauerhaft das Recht entzogen nach der Speicherberechtigung zu fragen, ohne Speicherberechtigung können wir keine Memos oder Backups speichern!</string>

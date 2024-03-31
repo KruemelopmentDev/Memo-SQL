@@ -33,6 +33,9 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import es.dmoral.toasty.Toasty
 import java.text.ParseException
@@ -45,7 +48,7 @@ class Allmems : Fragment(), AdaptertoFragment {
     var rowItems = ArrayList<Liste>()
     private var backup = ArrayList<Liste>()
     var adapter: CustomBaseAdapter? = null
-    var listView: ListView? = null
+    var recyclerView: RecyclerView? = null
     var searchView: SearchView? = null
     var myDB: DataBaseHelper? = null
     private var filter = false
@@ -92,17 +95,22 @@ class Allmems : Fragment(), AdaptertoFragment {
                 false
             )
         )
-        listView = view.findViewById(R.id.listview)
+        recyclerView = view.findViewById(R.id.listview)
         rowItems = sortieren(rowItems)
         setHasOptionsMenu(true)
         adapter = CustomBaseAdapter(context, rowItems, myDB!!)
         adapter!!.setAdaptertoFragment(this)
-        listView!!.adapter = adapter
-        for (i in rowItems.indices) {
+        recyclerView!!.setHasFixedSize(false)
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        linearLayoutManager.recycleChildrenOnDetach = true
+        recyclerView!!.layoutManager = linearLayoutManager
+        recyclerView!!.addItemDecoration(VerticalSpaceItemDecoration(20))
+        recyclerView!!.adapter = adapter
+        /*for (i in rowItems.indices) {
             if (rowItems[i].id == focus) {
-                listView!!.setSelection(i)
+                recyclerView!!.setSelection(i)
             }
-        }
+        }*/
         fab = view.findViewById(R.id.floating)
         fab!!.setOnClickListener {
             val dialog = Dialog(requireContext(), R.style.AppDialog)
@@ -147,8 +155,8 @@ class Allmems : Fragment(), AdaptertoFragment {
                     if (!array.contains(uname)) array.add(uname)
                 }
             }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, array)
-            editText.setAdapter(adapter)
+            val adapter2 = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, array)
+            editText.setAdapter(adapter2)
             save.setOnClickListener {
                 if (editText.text.toString()
                         .isEmpty()
@@ -190,7 +198,6 @@ class Allmems : Fragment(), AdaptertoFragment {
                     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                     requireActivity().sendBroadcast(intent)
                     dialog.dismiss()
-                    if (rowItems[0].title == getString(R.string.nomemossafed)) rowItems.clear()
                     rowItems.add(
                         Liste(
                             myDB!!.getlastid(),
@@ -203,8 +210,14 @@ class Allmems : Fragment(), AdaptertoFragment {
                             true
                         )
                     )
+                    adapter!!.notifyItemInserted(rowItems.size)
+                    if (rowItems[0].title == getString(R.string.nomemossafed)){
+                        rowItems.removeAt(0)
+                        adapter!!.notifyItemRemoved(0)
+                    }
                     rowItems = sortieren(rowItems)
-                    adapter.notifyDataSetChanged()
+                    adapter!! .notifyItemRangeChanged(0,rowItems.size)
+                    adapter2.notifyDataSetChanged()
                     one!!.setVisible(true)
                     two!!.setVisible(true)
                     three!!.setVisible(true)
@@ -219,7 +232,7 @@ class Allmems : Fragment(), AdaptertoFragment {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         showfab = sharedPreferences.getBoolean("fabshow", true)
         if (!showfab) fab!!.hide() else {
-            listView!!.setOnTouchListener { v: View, event: MotionEvent ->
+            recyclerView!!.setOnTouchListener { v: View, event: MotionEvent ->
                 v.performClick()
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -324,7 +337,8 @@ class Allmems : Fragment(), AdaptertoFragment {
                                     res.getString(1),
                                     res.getString(3),
                                     res.getString(4),
-                                    res.getString(6)
+                                    res.getString(6),
+                                    res.getString(5)
                                 )
                             }
                         }
@@ -339,7 +353,7 @@ class Allmems : Fragment(), AdaptertoFragment {
                         )
                         outtoRight.duration = 200
                         outtoRight.interpolator = AccelerateInterpolator()
-                        listView!!.startAnimation(outtoRight)
+                        recyclerView!!.startAnimation(outtoRight)
                         Toasty.success(
                             requireContext(),
                             getString(R.string.delete_succesful),
@@ -348,6 +362,7 @@ class Allmems : Fragment(), AdaptertoFragment {
                         outtoRight.setAnimationListener(object : Animation.AnimationListener {
                             override fun onAnimationStart(animation: Animation) {}
                             override fun onAnimationEnd(animation: Animation) {
+                                val oldsize=rowItems.size
                                 rowItems.clear()
                                 val item1 = Liste(
                                     "",
@@ -363,7 +378,8 @@ class Allmems : Fragment(), AdaptertoFragment {
                                 one!!.setVisible(false)
                                 two!!.setVisible(false)
                                 three!!.setVisible(false)
-                                adapter!!.notifyDataSetChanged()
+                                adapter!!.notifyItemRangeRemoved(1,oldsize-1)
+                                adapter!!.notifyItemChanged(0)
                                 val outtoLeft: Animation = TranslateAnimation(
                                     Animation.RELATIVE_TO_PARENT, -1.0f,
                                     Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -372,7 +388,7 @@ class Allmems : Fragment(), AdaptertoFragment {
                                 )
                                 outtoLeft.duration = 200
                                 outtoLeft.interpolator = AccelerateInterpolator()
-                                listView!!.startAnimation(outtoLeft)
+                                recyclerView!!.startAnimation(outtoLeft)
                                 val widgetIDs = AppWidgetManager.getInstance(context)
                                     .getAppWidgetIds(
                                         ComponentName(
@@ -416,7 +432,7 @@ class Allmems : Fragment(), AdaptertoFragment {
                 for (a in rowItems) {
                     a.isLocked = true
                 }
-                adapter!!.notifyDataSetChanged()
+                adapter!!.notifyItemRangeChanged(0,adapter!!.itemCount)
             }
         }
         super.onResume()
@@ -532,7 +548,7 @@ class Allmems : Fragment(), AdaptertoFragment {
         if (rowItems[0].title != getString(R.string.nomemossafed)) {
             val dialog = Dialog(requireContext(), R.style.AppDialog)
             dialog.setContentView(R.layout.filterlist)
-            val listViewe = dialog.findViewById<ListView>(R.id.dynamic)
+            val listViewe = dialog.findViewById<RecyclerView>(R.id.dynamic)
             val btn = dialog.findViewById<TextView>(R.id.textView42)
             val filterListes = ArrayList<FilterListe>()
             var markierte = false
@@ -638,7 +654,11 @@ class Allmems : Fragment(), AdaptertoFragment {
                 adapter!!.notifyDataSetChanged()
             }
             val adapt = FilterBaseAdapter(requireContext(), noRepeat, markierte, passwortsecured)
-            listViewe.adapter = adapt
+            listViewe!!.setHasFixedSize(false)
+            val linearLayoutManager = LinearLayoutManager(requireContext())
+            linearLayoutManager.recycleChildrenOnDetach = true
+            listViewe.layoutManager = linearLayoutManager
+            listViewe.adapter=adapt
             listViewe.viewTreeObserver.addOnGlobalLayoutListener {
                 val frameheight = listViewe.height
                 val dp = frameheight / requireContext().resources.displayMetrics.density
@@ -672,7 +692,7 @@ class Allmems : Fragment(), AdaptertoFragment {
     }
 
     companion object {
-        var focus: String? = ""
+        private var focus: String? = ""
         fun newInstance(s: String?): Allmems {
             focus = s
             return Allmems()

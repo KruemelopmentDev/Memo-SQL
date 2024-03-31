@@ -1,5 +1,6 @@
 package de.kruemelopment.org.memo_sql
 
+import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
@@ -14,7 +15,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import es.dmoral.toasty.Toasty
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class WidgetMemoBearbeiten : AppCompatActivity() {
+class WidgetMemoBearbeiten : Activity() {
     private var locked = false
     private var shares = false
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.RemoteViews
 
 class WidgeteinzelnesMemo : AppWidgetProvider() {
@@ -42,7 +43,6 @@ class WidgeteinzelnesMemo : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widgeteinzelnes_memo)
             val myDB = DataBaseHelper(context)
             val res = myDB.allData
-            myDB.close()
             if (res.count > 0) {
                 while (res.moveToNext()) {
                     if (res.getString(0) == was) {
@@ -54,7 +54,7 @@ class WidgeteinzelnesMemo : AppWidgetProvider() {
                         clickIntent.putExtra("Hallo", res.getString(0))
                         val clickPI = PendingIntent.getActivity(
                             context, 0,
-                            clickIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                            clickIntent, PendingIntent.FLAG_IMMUTABLE
                         )
                         views.setOnClickPendingIntent(R.id.widgetlayout, clickPI)
                         val edit = Intent(context, WidgetMemoBearbeiten::class.java)
@@ -65,7 +65,7 @@ class WidgeteinzelnesMemo : AppWidgetProvider() {
                         edit.putExtra("passwort", res.getString(6))
                         val editclick = PendingIntent.getActivity(
                             context, 0,
-                            edit, PendingIntent.FLAG_UPDATE_CURRENT
+                            edit, PendingIntent.FLAG_IMMUTABLE
                         )
                         views.setOnClickPendingIntent(R.id.imageView10, editclick)
                         views.setImageViewResource(R.id.imageView10, R.drawable.pencil_outline)
@@ -79,7 +79,7 @@ class WidgeteinzelnesMemo : AppWidgetProvider() {
                 val clickIntent = Intent(context, MainActivity::class.java)
                 val clickPI = PendingIntent.getActivity(
                     context, 0,
-                    clickIntent, PendingIntent.FLAG_UPDATE_CURRENT
+                    clickIntent, PendingIntent.FLAG_IMMUTABLE
                 )
                 views.setOnClickPendingIntent(R.id.widgetlayout, clickPI)
             }
