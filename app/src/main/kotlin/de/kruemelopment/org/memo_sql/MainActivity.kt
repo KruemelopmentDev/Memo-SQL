@@ -23,7 +23,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
+import de.kruemelopment.org.memo_sql.libraries.LibraryFragment
 import es.dmoral.toasty.Toasty
+import org.kruemelopment.de.bewecker.libraries.LibraryListe
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.Objects
@@ -177,9 +179,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 lastitem!!.setChecked(false)
                 item.setChecked(true)
                 val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.frame_layout, Libraries())
+                transaction.replace(R.id.frame_layout, LibraryFragment())
                 transaction.commit()
-                last = Libraries()
+                last = LibraryFragment()
                 supportActionBar!!.title = getString(R.string.libraries)
             }
         }

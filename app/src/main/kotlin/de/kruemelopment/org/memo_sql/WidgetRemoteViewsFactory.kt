@@ -18,10 +18,9 @@ class WidgetRemoteViewsFactory internal constructor(private val context: Context
     private var count = 0
     private var widgetlist = ArrayList<Liste>()
     private val dataBaseHelper: DataBaseHelper = DataBaseHelper(context)
-    private var mAppWidgetId: Int
+    private var mAppWidgetId: Int = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
 
     init {
-        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
         updateWidgetListview()
     }
 

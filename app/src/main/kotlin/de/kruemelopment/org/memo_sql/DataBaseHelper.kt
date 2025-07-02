@@ -6,15 +6,15 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Name, null, 2) {
+class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, 2) {
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
-        sqLiteDatabase.execSQL("Create Table $Table_Name (ID INTEGER PRIMARY KEY AUTOINCREMENT, Titel TEXT,Thema TEXT,Inhalt TEXT,Datum TEXT,Favorit TEXT,Passwort TEXT)")
+        sqLiteDatabase.execSQL("Create Table $TABLE_NAME (ID INTEGER PRIMARY KEY AUTOINCREMENT, Titel TEXT,Thema TEXT,Inhalt TEXT,Datum TEXT,Favorit TEXT,Passwort TEXT)")
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, i: Int, i1: Int) {
         if (i1 > i) {
-            sqLiteDatabase.execSQL("ALTER TABLE $Table_Name ADD COLUMN Passwort TEXT DEFAULT null")
-        } else sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $Table_Name")
+            sqLiteDatabase.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN Passwort TEXT DEFAULT null")
+        } else sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
     }
 
     fun insertData(
@@ -33,7 +33,7 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
         contentValues.put("Datum", datum)
         contentValues.put("Favorit", fav)
         contentValues.put("Passwort", passwort)
-        val result = database.insert(Table_Name, null, contentValues)
+        val result = database.insert(TABLE_NAME, null, contentValues)
         database.close()
         return result != -1L
     }
@@ -41,12 +41,12 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
     val allData: Cursor
         get() {
             val sqLiteDatabase = this.writableDatabase
-            return sqLiteDatabase.rawQuery("Select * from $Table_Name", null)
+            return sqLiteDatabase.rawQuery("Select * from $TABLE_NAME", null)
         }
 
     fun deleteData(id: String?) {
         val db = this.writableDatabase
-        db.delete(Table_Name, "ID=?", arrayOf(id))
+        db.delete(TABLE_NAME, "ID=?", arrayOf(id))
     }
 
     fun updateData(
@@ -66,7 +66,7 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
         contentValues.put("Datum", datum)
         contentValues.put("Favorit", fav)
         contentValues.put("Passwort", passwort)
-        val result = db.update(Table_Name, contentValues, "ID=?", arrayOf(id))
+        val result = db.update(TABLE_NAME, contentValues, "ID=?", arrayOf(id))
         return result > 0
     }
 
@@ -74,7 +74,7 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
         get() {
             val sqLiteDatabase = this.writableDatabase
             return sqLiteDatabase.rawQuery(
-                "Select * from $Table_Name ORDER BY Datum ASC",
+                "Select * from $TABLE_NAME ORDER BY Datum ASC",
                 null
             )
         }
@@ -82,19 +82,19 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
         get() {
             val sqLiteDatabase = this.writableDatabase
             return sqLiteDatabase.rawQuery(
-                "Select * from $Table_Name ORDER BY Datum DESC",
+                "Select * from $TABLE_NAME ORDER BY Datum DESC",
                 null
             )
         }
 
     fun deleteAll() {
         val db = this.writableDatabase
-        db.execSQL("delete from $Table_Name")
+        db.execSQL("delete from $TABLE_NAME")
     }
 
     fun getData(id: String?): Cursor {
         val sqLiteDatabase = this.writableDatabase
-        val cursor = sqLiteDatabase.rawQuery("Select * from $Table_Name Where ID=$id", null)
+        val cursor = sqLiteDatabase.rawQuery("Select * from $TABLE_NAME Where ID=$id", null)
         cursor.moveToFirst()
         return cursor
     }
@@ -102,8 +102,8 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
     fun empty(): Boolean {
         var empty = true
         val db = this.writableDatabase
-        val cur = db.rawQuery("SELECT COUNT(*) FROM $Table_Name", null)
-        if (cur != null && cur.moveToFirst()) {
+        val cur = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        if (cur.moveToFirst()) {
             empty = cur.getInt(0) == 0
         }
         cur.close()
@@ -112,7 +112,7 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
 
     fun getlastid(): String {
         val sqLiteDatabase = this.writableDatabase
-        val r = sqLiteDatabase.rawQuery("Select * from $Table_Name", null)
+        val r = sqLiteDatabase.rawQuery("Select * from $TABLE_NAME", null)
         r.moveToLast()
         val re = r.getString(0)
         r.close()
@@ -120,7 +120,7 @@ class DataBaseHelper(context: Context?) : SQLiteOpenHelper(context, Database_Nam
     }
 
     companion object {
-        private const val Database_Name = "Memo.db"
-        private const val Table_Name = "default_table"
+        private const val DATABASE_NAME = "Memo.db"
+        private const val TABLE_NAME = "default_table"
     }
 }

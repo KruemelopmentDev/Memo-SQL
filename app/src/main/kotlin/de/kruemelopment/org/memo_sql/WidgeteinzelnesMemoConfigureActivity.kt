@@ -1,6 +1,5 @@
 package de.kruemelopment.org.memo_sql
 
-import android.app.Activity
 import android.app.Dialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
@@ -32,8 +31,8 @@ class WidgeteinzelnesMemoConfigureActivity : AppCompatActivity() {
     private var myBiometricPrompt: BiometricPrompt? = null
     private var promptInfo: PromptInfo? = null
     var passwort: String? = null
-    public override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    public override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             val lol = PreferenceManager.getDefaultSharedPreferences(this)
             val nacht = lol.getBoolean("nightmode", false)

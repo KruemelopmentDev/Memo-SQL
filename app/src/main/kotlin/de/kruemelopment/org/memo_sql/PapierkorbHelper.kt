@@ -7,15 +7,15 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class PapierkorbHelper internal constructor(context: Context?) :
-    SQLiteOpenHelper(context, Database_Name, null, 2) {
+    SQLiteOpenHelper(context, DATABASE_NAME, null, 2) {
     override fun onCreate(sqLiteDatabase: SQLiteDatabase) {
-        sqLiteDatabase.execSQL("Create Table $Table_Name (ID INTEGER PRIMARY KEY AUTOINCREMENT, Titel TEXT,Thema TEXT,Inhalt TEXT,Datum TEXT,Favorit TEXT,Passwort TEXT)")
+        sqLiteDatabase.execSQL("Create Table $TABLE_NAME (ID INTEGER PRIMARY KEY AUTOINCREMENT, Titel TEXT,Thema TEXT,Inhalt TEXT,Datum TEXT,Favorit TEXT,Passwort TEXT)")
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, i: Int, i1: Int) {
         if (i1 > i) {
-            sqLiteDatabase.execSQL("ALTER TABLE $Table_Name ADD COLUMN Passwort TEXT DEFAULT null")
-        } else sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $Table_Name")
+            sqLiteDatabase.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN Passwort TEXT DEFAULT null")
+        } else sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
     }
 
     fun insertData(
@@ -34,7 +34,7 @@ class PapierkorbHelper internal constructor(context: Context?) :
         contentValues.put("Datum", datum)
         contentValues.put("Passwort", passwort)
         contentValues.put("Favorit", favo)
-        database.insert(Table_Name, null, contentValues)
+        database.insert(TABLE_NAME, null, contentValues)
         database.close()
     }
 
@@ -42,26 +42,26 @@ class PapierkorbHelper internal constructor(context: Context?) :
         get() {
             val sqLiteDatabase = this.writableDatabase
             return sqLiteDatabase.rawQuery(
-                "Select * from $Table_Name ORDER BY Datum DESC",
+                "Select * from $TABLE_NAME ORDER BY Datum DESC",
                 null
             )
         }
 
     fun deleteData(id: String?) {
         val db = this.writableDatabase
-        db.delete(Table_Name, "ID=?", arrayOf(id))
+        db.delete(TABLE_NAME, "ID=?", arrayOf(id))
     }
 
     fun deleteAll() {
         val db = this.writableDatabase
-        db.execSQL("delete from $Table_Name")
+        db.execSQL("delete from $TABLE_NAME")
     }
 
     fun empty(): Boolean {
         var empty = true
         val db = this.writableDatabase
-        val cur = db.rawQuery("SELECT COUNT(*) FROM $Table_Name", null)
-        if (cur != null && cur.moveToFirst()) {
+        val cur = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        if (cur.moveToFirst()) {
             empty = cur.getInt(0) == 0
         }
         cur.close()
@@ -69,7 +69,7 @@ class PapierkorbHelper internal constructor(context: Context?) :
     }
 
     companion object {
-        private const val Database_Name = "Papierkorb.db"
-        private const val Table_Name = "default_table"
+        private const val DATABASE_NAME = "Papierkorb.db"
+        private const val TABLE_NAME = "default_table"
     }
 }

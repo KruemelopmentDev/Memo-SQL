@@ -14,23 +14,13 @@ class WidgetAdapter(var context: Context, private var rowItems: List<Liste>, pri
 
 
     class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var textView: TextView
-        var textView1: TextView
-        var textView2: TextView
-        var textView3: TextView
-        var imageView: ImageView
-        var imageView2: ImageView
-        var relativeLayout: RelativeLayout
-
-        init {
-            textView = v.findViewById(R.id.textView201)
-            textView1 = v.findViewById(R.id.textView301)
-            textView2 = v.findViewById(R.id.textView401)
-            textView3 = v.findViewById(R.id.textView501)
-            imageView = v.findViewById(R.id.imageView9)
-            imageView2 = v.findViewById(R.id.imageView10)
-            relativeLayout = v.findViewById(R.id.widgetlayout)
-        }
+        var textView: TextView = v.findViewById(R.id.textView201)
+        var textView1: TextView = v.findViewById(R.id.textView301)
+        var textView2: TextView = v.findViewById(R.id.textView401)
+        var textView3: TextView = v.findViewById(R.id.textView501)
+        var imageView: ImageView = v.findViewById(R.id.imageView9)
+        var imageView2: ImageView = v.findViewById(R.id.imageView10)
+        var relativeLayout: RelativeLayout = v.findViewById(R.id.widgetlayout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
